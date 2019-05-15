@@ -1,0 +1,29 @@
+.todo-input__container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 20px;
+}
+
+.btn {
+    border: 0;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: #fff;
+    background-color: #ff6600;
+}
+
+.todo-input__container input {
+    margin-right: 20px;
+}
+
+.todo-list__item {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px;
+    border-radius: 5px;
+    background: #fff;
+    box-shadow: 3px 5px 5px #d2d2d2;
+}
+

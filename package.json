@@ -1,0 +1,23 @@
+{
+  "name": "lavan",
+  "version": "1.0.0",
+  "description": "",
+  "main": "service-worker.js",
+  "scripts": {
+    "generate": "npx workbox generateSW",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/4aiw2/PWA.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/4aiw2/PWA/issues"
+  },
+  "homepage": "https://github.com/4aiw2/PWA#readme",
+  "devDependencies": {
+    "workbox-cli": "^4.2.0"
+  }
+}
