@@ -33,11 +33,17 @@ export default class AppList extends LitElement {
         
             .todo-list__item {
                 display: flex;
-                justify-content: center;
+                justify-content: space-between;
                 margin: 20px;
                 border-radius: 5px;
                 background: #fff;
                 box-shadow: 3px 5px 5px #d2d2d2;
+                padding: 10px;
+            }
+            
+            .todo-list__item button {
+                background-color: white;
+                border: none;
             }
         `
     }

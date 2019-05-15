@@ -9,6 +9,7 @@ import Queue from '/js/components/queue/queue.js';
     const skeleton = app.querySelector('.skeleton');
     const listPage = app.querySelector('[page=list]');
     const queue = new Queue();
+    const basePath = 'http://localhost:3000';
 
     checkConnectivity(3, 1000);
 
@@ -40,7 +41,7 @@ import Queue from '/js/components/queue/queue.js';
         const todoId = detail.todoId;
         const todo = await database.get('todo', 'todo');
         if (navigator.onLine) {
-            fetch('http://localhost:3000/todo/' + todoId, {
+            fetch(basePath+'/todo/' + todoId, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -58,7 +59,7 @@ import Queue from '/js/components/queue/queue.js';
     listPage.setAttribute('active', '');
 
     try {
-        const data = await fetch('http://localhost:3000/todo');
+        const data = await fetch(basePath+'/todo');
         const json = await data.json();
 
         if (navigator.onLine) {
@@ -96,7 +97,7 @@ import Queue from '/js/components/queue/queue.js';
             database.put('todo', json, 'todo');
             if (navigator.onLine) {
                 const req = new XMLHttpRequest();
-                req.open('POST', 'http://localhost:3000/todo', true);
+                req.open('POST', basePath+'/todo', true);
                 req.setRequestHeader('Content-Type', 'application/json');
                 req.send(JSON.stringify(newTodo))
             }else {
@@ -104,14 +105,8 @@ import Queue from '/js/components/queue/queue.js';
             }
         })
     }catch (error) {
-        const database = await openDB('app-store', 1, {
-            upgrade(db) {
-                db.createObjectStore('todo')
-            }
-        });
-
+        // if application is of line load data on innoDB
         const todo = await database.get('todo', 'todo');
-        console.log(todo);
 
         todo.map(item => {
             const todoElement = new AppList();
