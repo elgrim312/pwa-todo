@@ -22,6 +22,7 @@ import Queue from '/js/components/queue/queue.js';
     document.addEventListener('connection-changed', ({ detail }) => {
         if (detail.online && queue.getQueue().length > 0) {
             const syncTodo = queue.getQueue();
+            //play all element in queue
             syncTodo.forEach(function (queueTodo, index, object) {
                 if (queueTodo.type === "add") {
                     queue.syncAdding(queueTodo);
@@ -31,8 +32,74 @@ import Queue from '/js/components/queue/queue.js';
                     queue.syncRemove(queueTodo);
                 }
 
+                if (queueTodo.type === "update") {
+                    queue.syncUpdated(queueTodo)
+                }
+
+                //remove current element in queue
                 object.splice(index, 1)
             })
+        }
+    });
+
+    // trigger update element
+    document.addEventListener('todo-updated', ({detail}) => {
+        // convert h1 to input
+        const todo = detail.todo;
+
+        const currentTitle = todo.shadowRoot.querySelector('h1');
+
+        if (currentTitle) {
+            currentTitle.style.display = "none";
+
+            let value = currentTitle.innerText;
+            let input = document.createElement("input");
+
+            input.type = "text";
+            // inject current value in new input
+            input.value = value;
+
+            currentTitle.parentNode.insertBefore(input, currentTitle);
+
+            input.focus();
+            // event focus off
+            input.onblur = async () => {
+                // if update is not an empty string
+                if (input.value.length > 0) {
+                    const todoList = await database.get('todo', 'todo');
+
+                    currentTitle.parentNode.removeChild(input);
+                    currentTitle.innerHTML = input.value;
+                    currentTitle.style.display = "";
+
+                    let newTodo = {
+                        'createdAt': new Intl.DateTimeFormat('en-GB').format(Date.now()),
+                        'id': detail.id,
+                        'value': input.value
+                    };
+
+                    let currentTodoId = todo.shadowRoot.querySelector('.todo-list__item').getAttribute('data-id');
+                    console.log(currentTodoId);
+
+                    const response = todoList.filter(t => t.id != currentTodoId);
+                    response.push(newTodo);
+
+                    database.put('todo', response, 'todo');
+
+                    if (navigator.onLine) {
+                        fetch(basePath + '/todo/' + currentTodoId, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(newTodo)
+                        })
+                    } else {
+                        queue.addQueue('update', JSON.stringify(newTodo))
+                    }
+
+                }
+            }
         }
     });
 
@@ -51,7 +118,7 @@ import Queue from '/js/components/queue/queue.js';
             queue.addQueue("delete", {"id": todoId})
         }
 
-        const response = todo.filter(t => t.id !== todoId);
+        const response = todo.filter(t => t.id != todoId);
         database.put('todo', response, 'todo');
     });
 
@@ -74,8 +141,7 @@ import Queue from '/js/components/queue/queue.js';
         });
 
         const todoForm = document.querySelector('.btn');
-
-        todoForm.addEventListener('click', function (event) {
+        todoForm.addEventListener('click', function () {
             const input = document.querySelector('.js-todo-input');
 
             const todoElement = new AppList();
@@ -96,16 +162,19 @@ import Queue from '/js/components/queue/queue.js';
 
             database.put('todo', json, 'todo');
             if (navigator.onLine) {
-                const req = new XMLHttpRequest();
-                req.open('POST', basePath+'/todo', true);
-                req.setRequestHeader('Content-Type', 'application/json');
-                req.send(JSON.stringify(newTodo))
+                fetch(basePath+'/todo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newTodo)
+                });
             }else {
                 queue.addQueue('add', JSON.stringify(newTodo))
             }
         })
     }catch (error) {
-        // if application is of line load data on innoDB
+        // if application is offline load data on innoDB
         const todo = await database.get('todo', 'todo');
 
         todo.map(item => {

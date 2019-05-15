@@ -1,5 +1,4 @@
 import { LitElement, html, css } from 'lit-element';
-import { openDB } from 'idb';
 
 export default class AppList extends LitElement {
     constructor() {
@@ -66,12 +65,23 @@ export default class AppList extends LitElement {
         return  html `
         <article class="todo-list__item" data-id="${this.id}">
             <div class="content">
-                <h1>${this.title}</h1>
+                <h1 @click="${this.updateCard}">${this.title}</h1>
                 <span>${this.date}</span>
             </div>
             
              <button @click="${this.deleteCard}">x</button>
         </article> `
+    }
+
+    async updateCard() {
+        const event = new CustomEvent('todo-updated', {
+            detail: {
+                todo: this,
+                id: this.id
+            }
+        });
+
+        return document.dispatchEvent(event);
     }
 
     async deleteCard() {

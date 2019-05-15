@@ -13,7 +13,7 @@ export default class Queue {
     }
 
     syncAdding(queue) {
-        const request = fetch('http://localhost:3000/todo', {
+        fetch('http://localhost:3000/todo', {
            method: 'POST',
            headers: {
                'Content-Type': 'application/json'
@@ -23,11 +23,22 @@ export default class Queue {
     }
 
     syncRemove(queue) {
-        const request = fetch('http://localhost:3000/todo/' + queue.todo.id, {
+         fetch('http://localhost:3000/todo/' + queue.todo.id, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
             },
         });
+    }
+
+    syncUpdated(queue) {
+        let jsonQueue = JSON.parse(queue.todo);
+        fetch('http://localhost:3000/todo/'+ jsonQueue.id, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: queue.todo
+        })
     }
 }
