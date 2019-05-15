@@ -17,6 +17,10 @@
     "url": "https://github.com/4aiw2/PWA/issues"
   },
   "homepage": "https://github.com/4aiw2/PWA#readme",
+  "dependencies": {
+    "idb": "^4.0.3",
+    "lit-element": "^2.1.0"
+  },
   "devDependencies": {
     "workbox-cli": "^4.2.0"
   }
